@@ -86,5 +86,5 @@ POX je sieťová softvérová platforma napísaná v programovacom jazyku Python
 
 <a name=LLDP></a>
 #### LLDP
-Link Layer Discovery Protocol je štandardizoavaný jednocestný protokol linkovej vrstvy, ktorý výlučne vysiela informácie a nedochádza k žiadnemu potvrdzovaniu prijatia či nadväzovaniu spojenia. Aktívny prvok odosiela (periodicky, alebo po modifikácii) informácie o sebe ostatným LLDP zariadeniam v sieti pomocou multicastu, zariadenia ďalej tieto správy nerozširujú.
+Link Layer Discovery Protocol je štandardizovaný jednocestný protokol linkovej vrstvy, ktorý výlučne vysiela informácie a nedochádza k žiadnemu potvrdzovaniu prijatia či nadväzovaniu spojenia. Aktívny prvok odosiela (periodicky, alebo po modifikácii) informácie o sebe ostatným LLDP zariadeniam v sieti pomocou multicastu, zariadenia ďalej tieto správy nerozširujú.
 
