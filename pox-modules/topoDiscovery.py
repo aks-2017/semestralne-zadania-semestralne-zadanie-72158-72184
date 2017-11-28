@@ -1,22 +1,20 @@
 import copy
 import pox
 import time
-import pox.openflow.libopenflow_01 as of  
-from pox.core import core  
-from pox.lib.revent import *  
-from pox.lib.recoco import Timer  
-from collections import defaultdict  
-from pox.openflow.discovery import Discovery  
+import pox.openflow.libopenflow_01 as of
+from pox.core import core
+from pox.lib.revent import *
+from pox.lib.recoco import Timer
+from collections import defaultdict
+from pox.openflow.discovery import Discovery
 
 log = core.getLogger()
 
 
-class TestEvent(Event):  
-  def __init__(self): #,arg1,arg2):
+class TestEvent(Event):
+  def __init__(self, arg1):
     Event.__init__(self)
-    print "TestEvent is initialed"
-    #self.par = arg1
-    #self.par2 = arg2
+    self.routes = arg1
 
 
 class Graph:
@@ -69,17 +67,17 @@ class Node(object):
 
 
 class topoDiscovery(EventMixin):
+    _core_name = "topoDiscovery"
     _eventMixin_events = set([TestEvent,])
     def __init__(self):
         self.graph = Graph()
         self.listenTo(core)
-        Timer(11, self._handle_timer_elapse)
-        
+        Timer(10, self._handle_timer_elapse)
+
         def startup():
             core.openflow.addListeners(self, priority = 0)
-            #core.openflow_discovery.addListenerByName("LinkEvent", self.s)
             core.openflow_discovery.addListeners(self)
-    
+
         core.call_when_ready(startup, ('openflow','openflow_discovery'))
 
     def _handle_LinkEvent(self, event): # handler for LLDP link event
@@ -100,12 +98,12 @@ class topoDiscovery(EventMixin):
                     yield path + [next.dpid]
                 else:
                     stack.append((next, path + [next.dpid]))
-    
+
     def _handle_timer_elapse (self): # create tree from graph with Dijkstra
         tree = core.topoDiscovery.create_tree()
         paths = list(self.derive_paths(tree))
 	print paths
-        self.raiseEvent(TestEvent) # raise event in latencyMonitor
+        self.raiseEvent(TestEvent, paths) # raise event in latencyMonitor
 
     def create_tree(self):
         nodes = copy.deepcopy(self.graph.nodes)
@@ -120,11 +118,10 @@ class topoDiscovery(EventMixin):
                         if node.dpid == link[0] and current_node == link[1] or node.dpid == link[1] and current_node == link[0]:
                             self.graph.links.remove(link) # <--> is now used
                             node.add_branch(current_node, node.num_hops + 1, node)
-                            break		    
+                            break
 
         return tree
 
 
-def launch():  
+def launch():
     core.registerNew(topoDiscovery)
-
